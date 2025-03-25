@@ -11,15 +11,31 @@
 // Import Routes
 
 import { Route as rootRoute } from './routes/__root'
+import { Route as WorkspacesImport } from './routes/workspaces'
 import { Route as LoginImport } from './routes/login'
+import { Route as FavoritesImport } from './routes/favorites'
 import { Route as DashboardImport } from './routes/dashboard'
 import { Route as IndexImport } from './routes/index'
+import { Route as WorkspacesNewImport } from './routes/workspaces.new'
+import { Route as WorkspacesIdImport } from './routes/workspaces.$id'
 
 // Create/Update Routes
+
+const WorkspacesRoute = WorkspacesImport.update({
+  id: '/workspaces',
+  path: '/workspaces',
+  getParentRoute: () => rootRoute,
+} as any)
 
 const LoginRoute = LoginImport.update({
   id: '/login',
   path: '/login',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const FavoritesRoute = FavoritesImport.update({
+  id: '/favorites',
+  path: '/favorites',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -33,6 +49,18 @@ const IndexRoute = IndexImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRoute,
+} as any)
+
+const WorkspacesNewRoute = WorkspacesNewImport.update({
+  id: '/new',
+  path: '/new',
+  getParentRoute: () => WorkspacesRoute,
+} as any)
+
+const WorkspacesIdRoute = WorkspacesIdImport.update({
+  id: '/$id',
+  path: '/$id',
+  getParentRoute: () => WorkspacesRoute,
 } as any)
 
 // Populate the FileRoutesByPath interface
@@ -53,6 +81,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardImport
       parentRoute: typeof rootRoute
     }
+    '/favorites': {
+      id: '/favorites'
+      path: '/favorites'
+      fullPath: '/favorites'
+      preLoaderRoute: typeof FavoritesImport
+      parentRoute: typeof rootRoute
+    }
     '/login': {
       id: '/login'
       path: '/login'
@@ -60,49 +95,122 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LoginImport
       parentRoute: typeof rootRoute
     }
+    '/workspaces': {
+      id: '/workspaces'
+      path: '/workspaces'
+      fullPath: '/workspaces'
+      preLoaderRoute: typeof WorkspacesImport
+      parentRoute: typeof rootRoute
+    }
+    '/workspaces/$id': {
+      id: '/workspaces/$id'
+      path: '/$id'
+      fullPath: '/workspaces/$id'
+      preLoaderRoute: typeof WorkspacesIdImport
+      parentRoute: typeof WorkspacesImport
+    }
+    '/workspaces/new': {
+      id: '/workspaces/new'
+      path: '/new'
+      fullPath: '/workspaces/new'
+      preLoaderRoute: typeof WorkspacesNewImport
+      parentRoute: typeof WorkspacesImport
+    }
   }
 }
 
 // Create and export the route tree
 
+interface WorkspacesRouteChildren {
+  WorkspacesIdRoute: typeof WorkspacesIdRoute
+  WorkspacesNewRoute: typeof WorkspacesNewRoute
+}
+
+const WorkspacesRouteChildren: WorkspacesRouteChildren = {
+  WorkspacesIdRoute: WorkspacesIdRoute,
+  WorkspacesNewRoute: WorkspacesNewRoute,
+}
+
+const WorkspacesRouteWithChildren = WorkspacesRoute._addFileChildren(
+  WorkspacesRouteChildren,
+)
+
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/dashboard': typeof DashboardRoute
+  '/favorites': typeof FavoritesRoute
   '/login': typeof LoginRoute
+  '/workspaces': typeof WorkspacesRouteWithChildren
+  '/workspaces/$id': typeof WorkspacesIdRoute
+  '/workspaces/new': typeof WorkspacesNewRoute
 }
 
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/dashboard': typeof DashboardRoute
+  '/favorites': typeof FavoritesRoute
   '/login': typeof LoginRoute
+  '/workspaces': typeof WorkspacesRouteWithChildren
+  '/workspaces/$id': typeof WorkspacesIdRoute
+  '/workspaces/new': typeof WorkspacesNewRoute
 }
 
 export interface FileRoutesById {
   __root__: typeof rootRoute
   '/': typeof IndexRoute
   '/dashboard': typeof DashboardRoute
+  '/favorites': typeof FavoritesRoute
   '/login': typeof LoginRoute
+  '/workspaces': typeof WorkspacesRouteWithChildren
+  '/workspaces/$id': typeof WorkspacesIdRoute
+  '/workspaces/new': typeof WorkspacesNewRoute
 }
 
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/dashboard' | '/login'
+  fullPaths:
+    | '/'
+    | '/dashboard'
+    | '/favorites'
+    | '/login'
+    | '/workspaces'
+    | '/workspaces/$id'
+    | '/workspaces/new'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/dashboard' | '/login'
-  id: '__root__' | '/' | '/dashboard' | '/login'
+  to:
+    | '/'
+    | '/dashboard'
+    | '/favorites'
+    | '/login'
+    | '/workspaces'
+    | '/workspaces/$id'
+    | '/workspaces/new'
+  id:
+    | '__root__'
+    | '/'
+    | '/dashboard'
+    | '/favorites'
+    | '/login'
+    | '/workspaces'
+    | '/workspaces/$id'
+    | '/workspaces/new'
   fileRoutesById: FileRoutesById
 }
 
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   DashboardRoute: typeof DashboardRoute
+  FavoritesRoute: typeof FavoritesRoute
   LoginRoute: typeof LoginRoute
+  WorkspacesRoute: typeof WorkspacesRouteWithChildren
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   DashboardRoute: DashboardRoute,
+  FavoritesRoute: FavoritesRoute,
   LoginRoute: LoginRoute,
+  WorkspacesRoute: WorkspacesRouteWithChildren,
 }
 
 export const routeTree = rootRoute
@@ -117,7 +225,9 @@ export const routeTree = rootRoute
       "children": [
         "/",
         "/dashboard",
-        "/login"
+        "/favorites",
+        "/login",
+        "/workspaces"
       ]
     },
     "/": {
@@ -126,8 +236,26 @@ export const routeTree = rootRoute
     "/dashboard": {
       "filePath": "dashboard.tsx"
     },
+    "/favorites": {
+      "filePath": "favorites.tsx"
+    },
     "/login": {
       "filePath": "login.tsx"
+    },
+    "/workspaces": {
+      "filePath": "workspaces.tsx",
+      "children": [
+        "/workspaces/$id",
+        "/workspaces/new"
+      ]
+    },
+    "/workspaces/$id": {
+      "filePath": "workspaces.$id.tsx",
+      "parent": "/workspaces"
+    },
+    "/workspaces/new": {
+      "filePath": "workspaces.new.tsx",
+      "parent": "/workspaces"
     }
   }
 }
