@@ -1,9 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router'
+import { WorkspaceExplorer } from '../components/workspace/workspace-explorer'
 
 export const Route = createFileRoute('/workspaces')({
-  component: RouteComponent,
+  component: WorkspaceExplorer,
 })
-
-function RouteComponent() {
-  return <div>Hello "/workspaces"!</div>
-}
